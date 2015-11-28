@@ -1,0 +1,33 @@
+{% extends 'layout.html' %}
+{% block content %}
+	<div class="row">
+		<div class="col-md-2 muze-bar">
+			<h3>Muze</h3>
+		</div>
+		<div class="col-md-3 artist-bar">
+			<h3>Artist</h3>
+		</div>
+	</div>
+	<div class="row title-links">
+		<hr>
+		<div class="col-md-2">
+			<a href="#">Login</a>
+		</div>
+	</div>
+	<div class="row">
+		<hr>
+		<div class="col-md-6 artist-info">
+			<div class="col-md-6 artist-pic">
+				<img src="http://placehold.it/350x350">
+			</div>
+			<div class="col-md-7 artist-description">
+				<p>Info about artist and stuff<p>
+			</div>
+		</div>
+		<div class="col-md-6 album-list">
+			<ul>
+				<li>Album 1</li>
+			</ul>
+		</div>
+	</div>
+{% endblock %}

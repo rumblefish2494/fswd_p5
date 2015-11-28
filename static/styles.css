@@ -1,0 +1,112 @@
+
+ body {
+ 	background-color: #000;
+ 	font-family: arial, helvetica, sans-serif;
+ 	color: #fff;
+ }
+
+ input {
+ 	color: #000;
+ }
+
+ a {
+ 	color: #fff;
+ }
+
+ a:hover {
+ 	color: #ccc;
+ }
+
+ a:visited {
+ 	color: #595959;
+ }
+
+.submit {
+	background-color: #fff;
+	color: #000;
+}
+.row {
+	margin-left: 1px;
+}
+.header {
+	padding: 5px 10px;
+	margin: 0;
+	background-color: #006600;
+	border: 3px solid #66ff33;
+	border-radius: 10px;
+	color: #66ff33;
+}
+
+.title-bar {
+	padding: 0;
+	margin: 0;
+}
+
+.title-bar-links {
+
+}
+
+.title-text {
+	background-color: #006600;
+	font-weight: bold;
+}
+.sub-title-text {
+	background-color: #006600;
+	font-style: italic;
+}
+
+.muze-bar {
+	padding: 0 0 0 10px;
+	background-color: #000;
+	border: 3px solid #a6a6a6;
+	border-radius: 15px;
+	color: #a6a6a6;
+	font-weight: bold;
+}
+.artist-bar {
+	padding: 0 0 0 10px;
+	background-color: #8a00e6;
+	border: 3px solid #d580ff;
+	border-radius: 15px;
+	color: #d580ff;
+	font-weight: bold;
+}
+
+.album-bar {
+	padding: 0 0 0 10px;
+	background-color: #000099;
+	border: 3px solid #0099ff;
+	border-radius: 15px;
+	color: #0099ff;
+	font-weight: bold;
+}
+
+.artist-info {
+	padding: 0;
+	margin: 10px 0 0 0;
+}
+
+.artist-pic, .album-art {
+	padding: 0;
+	margin: 10px 0 0 0;
+	border:3px solid #000;
+	border-radius: 10px;
+
+}
+
+.artist-description, .album-description {
+	padding: 10px;
+	margin: 10px 0;
+	border: 3px solid #fff;
+	border-radius: 10px;
+	color: #fff;
+}
+
+.album-list, .song-list, .artist-list{
+	margin: 10px 0;
+	padding: 10px;
+	color: #fff;
+}
+
+
+

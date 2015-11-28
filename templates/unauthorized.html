@@ -1,0 +1,14 @@
+{% extends 'layout.html' %}
+{% block content %}
+<div class="row">
+	<div class="col-md-8 unauthorized">
+		<h1>You are not authorized for this action!</h1>
+	</div>
+</div>
+
+<script>
+	setTimeout(function() {
+		window.location.href = "/artists";
+	}, 2000);
+</script>
+{% endblock %}

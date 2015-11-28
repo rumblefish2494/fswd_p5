@@ -1,0 +1,38 @@
+{% extends 'layout.html' %}
+{% block content %}
+	<div class="row">
+		<div class="col-md-2 muze-bar">
+			<h3>Muze</h3>
+		</div>
+		<div class="col-md-3 artist-bar">
+			<h3>Artist</h3>
+		</div>
+	</div>
+	<div class="row title-links">
+		<hr>
+		<div class="col-md-2">
+			<a href="#">Cancel</a>
+		</div>
+	</div>
+<div class="row">
+	<hr>
+	<div class="col-md-6">
+		<form action="#">
+			Album Name:
+			<br>
+			<input type="text" name="name">
+			<br>
+			Album Art URL:
+			<br>
+			<input type="text" name="picture">
+			<br>
+			Album Info:
+			<br>
+			<input type="text" name="info">
+			<br>
+			<br>
+			<input class="submit" type="submit" value="Create">
+		</form>
+	</div>
+</div>
+{% endblock %}

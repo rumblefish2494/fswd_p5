@@ -1,0 +1,33 @@
+{% extends 'layout.html' %}
+{% block content %}
+<div class="row">
+	<div class="col-md-2 muze-bar">
+		<h3>Muze</h3>
+	</div>
+	<div class="col-md-3 artist-bar">
+		<h3>Artist</h3>
+	</div>
+	<div class="col-md-4 album-bar">
+		<h3>Album</h3>
+	</div>
+</div>
+	<div class="row title-links">
+	<hr>
+	<div class="col-md-2">
+		<a href="#">Cancel</a>
+	</div>
+</div>
+<div class="row">
+	<hr>
+	<div class="col-md-6">
+		<form action="#">
+			Song Title:
+			<br>
+			<input type="text" name="name">
+			<br>
+			<br>
+			<input class="submit" type="submit" value="Create">
+		</form>
+	</div>
+</div>
+{% endblock %}
