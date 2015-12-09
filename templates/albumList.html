@@ -1,40 +1,43 @@
 {% extends 'layout.html' %}
 {% block content %}
 	<div class="row">
-		<div class="col-md-2 muze-bar">
-			<h3>Muze</h3>
+		<div class="col-md-3 muze-bar">
+			<h3>EchoChamber</h3>
 		</div>
 		<div class="col-md-3 artist-bar">
-			<h3>Artist</h3>
+			<h3>{{artist.name}}</h3>
 		</div>
 	</div>
 	<div class="row title-links">
 		<hr>
 		<div class="col-md-2">
-			<a href="#">Add Album</a>
+			<a href="{{url_for('newAlbum', artist_id=artist.id)}}">Add Album</a>
 		</div>
 		<div class="col-md-2">
-			<a href="#">Edit Artist</a>
+			<a href="{{url_for('editArtist', artist_id=artist.id)}}">Edit Artist</a>
 		</div>
 		<div class="col-md-2">
-			<a href="#">Delete Artist</a>
+			<a href="{{url_for('deleteArtist', artist_id=artist.id)}}">Delete Artist</a>
+		</div>
+		<div class="col-md-2">
+			<a href="{{url_for('showArtists')}}">Back to Artist list</a>
 		</div>
 	</div>
 	<div class="row">
 		<hr>
 		<div class="col-md-6 artist-info">
 			<div class="col-md-6 artist-pic">
-				<img src="http://placehold.it/350x350">
+				<img src="{{artist.picUrl}}" height='300' width='300'>
 			</div>
 			<div class="col-md-7 artist-description">
-				<p>Info about artist and stuff<p>
+				<p>{{artist.bio}}<p>
 			</div>
 		</div>
 		<div class="col-md-6 album-list">
 			<ul>
-				<li><a href="#">Album 1</a></li>
-					<a href='#'>Edit</a>
-					<a href='#'>Delete</a>
+				{% for a in albums %}
+					<li><a href="{{url_for('showSongs', artist_id=artist.id, album_id=a.id)}}">{{a.title}}</a></li>
+				{% endfor %}
 			</ul>
 		</div>
 	</div>

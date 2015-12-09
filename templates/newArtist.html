@@ -14,7 +14,7 @@
 	<div class="row">
 		<hr>
 		<div class="col-md-6">
-			<form action="#">
+			<form action="{{url_for('newArtist')}}" method="POST">
 				Artist Name:
 				<br>
 				<input type="text" name="name">
@@ -30,6 +30,7 @@
 				<br>
 				<input class="submit" type="submit" value="Create">
 			</form>
+			<a href="{{url_for('showArtists')}}">Return to artist list</a>
 		</div>
 	</div>
 

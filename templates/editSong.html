@@ -1,29 +1,29 @@
 {% extends 'layout.html' %}
 {% block content %}
 <div class="row">
-	<div class="col-md-2 muze-bar">
-		<h3>Muze</h3>
+	<div class="col-md-3 muze-bar">
+		<h3>EchoChamber</h3>
 	</div>
 	<div class="col-md-3 artist-bar">
-		<h3>Artist</h3>
+		<h3>{{artist.name}}</h3>
 	</div>
 	<div class="col-md-4 album-bar">
-		<h3>Album</h3>
+		<h3>{{album.title}}/h3>
 	</div>
 </div>
 	<div class="row title-links">
 	<hr>
 	<div class="col-md-2">
-		<a href="#">Cancel</a>
+		<a href="{{url_for('showSongs', artist_id=artist.id, album_id=album.id)}}">Cancel</a>
 	</div>
 </div>
 <div class="row">
 	<hr>
 	<div class="col-md-6">
-		<form action="#">
+		<form action="{{url_for('editSong', artist_id=artist.id, album_id=album.id, song_id=song.id)}}", method='POST'>
 			Song Title:
 			<br>
-			<input type="text" name="name" placeholder="song name">
+			<input type="text" name="title" value="{{song.title}}">
 			<br>
 			<br>
 			<input class="submit" type="submit" value="Update">

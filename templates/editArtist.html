@@ -1,38 +1,38 @@
 {% extends 'layout.html' %}
 {% block content %}
 	<div class="row">
-		<div class="col-md-2 muze-bar">
-			<h3>Muze</h3>
+		<div class="col-md-3 muze-bar">
+			<h3>EchoChamber</h3>
 		</div>
 		<div class="col-md-3 artist-bar">
-			<h3>Artist</h3>
+			<h3>{{artist.name}}</h3>
 		</div>
 	</div>
 		<div class="row title-links">
 		<hr>
 		<div class="col-md-2">
-			<a href="#">Cancel</a>
+			<a href="{{url_for('showAlbums', artist_id=artist.id)}}">Cancel</a>
 		</div>
 	</div>
 	<div class="row">
-	<hr>
-	<div class="col-md-6">
-		<form action="#">
-			Artist Name:
-			<br>
-			<input type="text" name="name" placeholder="artist name">
-			<br>
-			Artist Picture URL:
-			<br>
-			<input type="text" name="picture" placeholder="artist picture url">
-			<br>
-			Artist Bio:
-			<br>
-			<input type="text" name="bio" placeholder="artist bio">
-			<br>
-			<br>
-			<input class="submit" type="submit" value="Update">
-		</form>
+		<hr>
+		<div class="col-md-6">
+			<form action="{{url_for('editArtist', artist_id=artist.id)}}" method='POST'>
+				Artist Name:
+				<br>
+				<input type="text" name="name" value="{{artist.name}}">
+				<br>
+				Artist Picture URL:
+				<br>
+				<input type="text" name="picture" value="{{artist.picUrl}}">
+				<br>
+				Artist Bio:
+				<br>
+				<input type="text" name="bio" value="{{artist.bio}}">
+				<br>
+				<br>
+				<input class="submit" type="submit" value="Update">
+			</form>
+		</div>
 	</div>
-</div>
 {% endblock %}

@@ -1,8 +1,10 @@
 {% extends 'layout.html' %}
 {% block content %}
 <div class="col-md-8">
-	<h1>Are you sure you want to delete album{{album}} ?</h1>
-	<button class="submit">Delete</button>
-	<a href="#">Cancel</a>
+	<h1>Are you sure you want to delete album {{album.title}} ?</h1>
+	<form action="{{url_for('deleteAlbum', artist_id=artist.id, album_id=album.id)}}" method='POST'>
+		<input type="submit" value="Delete">
+	</form>
+	<a href="{{url_for('showSongs', artist_id=artist.id, album_id=album.id)}}">Cancel</a>
 <div>
 {% endblock %}
