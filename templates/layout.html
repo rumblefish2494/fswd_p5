@@ -11,9 +11,20 @@
 		<div class="container">
 			{% block header %}
 				<div class="header row">
-					<div class="title-bar col-md-10">
+					<div class="title-bar col-md-4">
 						<h1 class="title-text">EchoChamber</h1>
 						<h3 class="sub-title-text">music everyone should hear</h1>
+					</div>
+					<div class="flash col-md-4">
+					{% with messages = get_flashed_messages() %}
+						{% if messages %}
+							<ul class='flashes'>
+								{% for message in messages %}
+									<li>{{message}}</li>
+								{% endfor %}
+							</ul>
+						{% endif %}
+					{% endwith %}
 					</div>
 					<div class "title-bar-links col-md-2">
 						{% block login %}

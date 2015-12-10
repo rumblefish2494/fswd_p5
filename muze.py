@@ -35,6 +35,7 @@ def newArtist():
 		newArtist = Artist(name=request.form['name'], bio=request.form['bio'], picUrl=request.form['picture'])
 		session.add(newArtist)
 		session.commit()
+		flash("New artist has been added!")
 		return redirect(url_for('showArtists'))
 	login = True
 	if login:
@@ -55,6 +56,7 @@ def editArtist(artist_id):
 			artist.bio = request.form['bio']
 			session.add(artist)
 			session.commit()
+			flash(artist.name + " has been edited!")
 			return redirect(url_for('showAlbums', artist_id=artist_id))
 		return render_template("editArtist.html", artist=artist, bio=bio)
 	return render_template("unauthorized.html")
@@ -64,17 +66,21 @@ def editArtist(artist_id):
 def deleteArtist(artist_id):
 	login = True
 	if login:
+		artist = session.query(Artist).filter_by(id=artist_id).one()
+		songs = session.query(Song).filter_by(artist_id=artist_id).all()
 		if request.method == 'POST':
-			songs = session.query(Song).filter_by(artist_id=artist_id).all()
 			print len(songs)
 			for s in songs:
 				print s.title
-			artist = session.query(Artist).filter_by(id=artist_id).one()
+
 			print artist.name
-			session.delete(artist)
-			session.commit()
-			return redirect(url_for('showArtists'))
-		artist = session.query(Artist).filter_by(id=artist_id).one()
+			if len(songs) == 0:
+				session.delete(artist)
+				session.commit()
+				flash("Artist succesfully deleted.")
+				return redirect(url_for('showArtists'))
+			flash("You cannot delete artists that have existing songs.")
+			return render_template('unauthorized.html')
 		return render_template('deleteArtist.html', artist=artist)
 	return render_template('unauthorized.html')
 
@@ -105,6 +111,7 @@ def newAlbum(artist_id):
 			nAlbum = Album(title=request.form['title'], description=request.form['info'], albumArtUrl=request.form['picture'], artist_id=artist.id, user_id=1)
 			session.add(nAlbum)
 			session.commit()
+			flash("Album " + nAlbum.title + " has been added to " + artist.name)
 			return redirect(url_for('showAlbums', artist_id=artist_id))
 		return render_template('newAlbum.html', albums=albums, artist=artist)
 	return render_template('unauthorized.html')
@@ -122,6 +129,7 @@ def editAlbum(artist_id, album_id):
 			album.description = request.form['description']
 			session.add(album)
 			session.commit()
+			flash("Album " + album.title + " has been edited.")
 			return redirect(url_for('showSongs', artist_id=artist_id, album_id=album_id))
 		return render_template('editAlbum.html', artist=artist, album=album)
 	return render_template('unauthorized.html')
@@ -139,7 +147,9 @@ def deleteAlbum(artist_id, album_id):
 			if len(songs) == 0:
 				session.delete(album)
 				session.commit()
+				flash("Album has been deleted.")
 				return redirect(url_for('showAlbums', artist_id=artist_id))
+			flash("You must delete all songs first.")
 			return render_template('unauthorized.html')
 		return render_template('deleteAlbum.html', artist=artist, album=album)
 	return render_template('unauthorized.html')
@@ -163,9 +173,10 @@ def newSong(artist_id, album_id):
 		artist = session.query(Artist).filter_by(id=artist_id).one()
 		album = session.query(Album).filter_by(id=album_id).one()
 		if request.method == 'POST':
-			nSong = Song(title=request.form['name'], album_id=album_id, user_id=1)
+			nSong = Song(title=request.form['name'], album_id=album_id, artist_id=artist_id, user_id=1)
 			session.add(nSong)
 			session.commit()
+			flash("Song " + nSong.title + " has been added")
 			return redirect(url_for('showSongs', artist_id=artist_id, album_id=album_id))
 		return render_template('newSong.html', artist= artist, album=album)
 	return render_template('unauthorized.html')
@@ -184,15 +195,24 @@ def editSong(artist_id, album_id, song_id):
 			session.add(song)
 			session.commit()
 			return redirect(url_for('showSongs', artist_id=artist_id, album_id=album_id))
-		return render_template('editSong.html', artist=artist, album=album, song=song)
+		return render_template('editSong.html', artist_id=artist_id, album_id=album_id, song=song)
 	return render_template('unauthorized.html')
 
 #delete song
-@app.route('/artists/<int:artist_id>/albums/<int:album_id>/songs/<int:song_id>/delete/')
+@app.route('/artists/<int:artist_id>/albums/<int:album_id>/songs/<int:song_id>/delete/', methods=['GET', 'POST'])
 def deleteSong(artist_id, album_id, song_id):
 	login = True
 	if login:
-		return render_template('deleteSong.html')
+		artist = session.query(Artist).filter_by(id=artist_id).one()
+		album = session.query(Album).filter_by(id=album_id).one()
+		song = session.query(Song).filter_by(id=song_id).one()
+		if request.method == 'POST':
+			if song.user_id == 1:
+				session.delete(song)
+				session.commit()
+				return redirect(url_for('showSongs', artist_id=artist_id, album_id=album_id))
+			return render_template('unauthorized.html')
+		return render_template('deleteSong.html', artist_id=artist_id, album_id=album_id, song=song)
 	return render_template('unauthorized.html')
 
 

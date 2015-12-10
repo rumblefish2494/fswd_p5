@@ -51,10 +51,10 @@ class Song(Base):
 	__tablename__ = 'song'
 	id = Column(Integer, primary_key=True)
 	title = Column(String, nullable=False)
-	artist_id = Column(Integer, ForeignKey("artist_id"))
+	artist_id = Column(Integer, ForeignKey("artist.id"))
 	album_id = Column(Integer, ForeignKey("album.id"))
 	user_id = Column(Integer, ForeignKey("user.id"))
-	artist_id = relationship(Artist)
+	artist = relationship(Artist)
 	album = relationship(Album)
 	user = relationship(User)
 
