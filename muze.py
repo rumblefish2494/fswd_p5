@@ -223,16 +223,31 @@ def returnArtists():
 	artists = session.query(Artist).all()
 	return jsonify(Artists=[a.serialize for a in artists])
 
+@app.route('/artists/<int:artist_id>/JSON/')
+def returnArtist(artist_id):
+	artist = session.query(Artist).filter_by(id=artist_id).one()
+	return jsonify(artist.serialize)
+
 #API endpoint to return albums
 @app.route('/albums/JSON/')
 def returnAlbums():
 	albums = session.query(Album).all()
 	return jsonify(Albums=[a.serialize for a in albums])
 
+@app.route('/albums/<int:album_id>/JSON/')
+def returnAlbum(album_id):
+	album = session.query(Album).filter_by(id=album_id).one()
+	return jsonify(album.serialize)
+
 @app.route('/songs/JSON/')
 def returnSongs():
 	songs = session.query(Song).all()
 	return jsonify(Songs=[s.serialize for s in songs])
+
+@app.route('/songs/<int:song_id>/JSON/')
+def returnSong(song_id):
+	song = session.query(Song).filter_by(id=song_id).one()
+	return jsonify(song.serialize)
 
 if __name__ == '__main__':
 	app.secret_key ='some_secret'
