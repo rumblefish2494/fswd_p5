@@ -194,8 +194,9 @@ def editSong(artist_id, album_id, song_id):
 			song.title = request.form['title']
 			session.add(song)
 			session.commit()
+			flash(song.title + " has been edited.")
 			return redirect(url_for('showSongs', artist_id=artist_id, album_id=album_id))
-		return render_template('editSong.html', artist_id=artist_id, album_id=album_id, song=song)
+		return render_template('editSong.html', artist=artist, album=album, song=song)
 	return render_template('unauthorized.html')
 
 #delete song
@@ -210,6 +211,7 @@ def deleteSong(artist_id, album_id, song_id):
 			if song.user_id == 1:
 				session.delete(song)
 				session.commit()
+				flash("Song has been deleted from " + album.title)
 				return redirect(url_for('showSongs', artist_id=artist_id, album_id=album_id))
 			return render_template('unauthorized.html')
 		return render_template('deleteSong.html', artist_id=artist_id, album_id=album_id, song=song)
