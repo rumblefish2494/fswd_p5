@@ -1,4 +1,4 @@
-from flask import Flask, url_for, redirect, render_template, request, flash
+from flask import Flask, url_for, redirect, render_template, request, flash, jsonify
 from sqlalchemy import Column, ForeignKey, Integer, String, create_engine, update
 from sqlalchemy.orm import sessionmaker, relationship
 from database_setup import Base, Admin, User, Artist, Album, Song
@@ -217,8 +217,22 @@ def deleteSong(artist_id, album_id, song_id):
 		return render_template('deleteSong.html', artist_id=artist_id, album_id=album_id, song=song)
 	return render_template('unauthorized.html')
 
+#API endpoint to return artists
+@app.route('/artists/JSON/')
+def returnArtists():
+	artists = session.query(Artist).all()
+	return jsonify(Artists=[a.serialize for a in artists])
 
+#API endpoint to return albums
+@app.route('/albums/JSON/')
+def returnAlbums():
+	albums = session.query(Album).all()
+	return jsonify(Albums=[a.serialize for a in albums])
 
+@app.route('/songs/JSON/')
+def returnSongs():
+	songs = session.query(Song).all()
+	return jsonify(Songs=[s.serialize for s in songs])
 
 if __name__ == '__main__':
 	app.secret_key ='some_secret'

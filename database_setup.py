@@ -29,8 +29,8 @@ class Artist(Base):
 	@property
 	def serialize(self):
 		return {
-			'id': self.id,
 			'name': self.name,
+			'id': self.id,
 			'bio': self.bio,
 			'picUrl': self.picUrl
 		}
@@ -47,6 +47,16 @@ class Album(Base):
 	user_id = Column(Integer, ForeignKey("user.id"))
 	user = relationship(User)
 
+	@property
+	def serialize(self):
+		return {
+			'id': self.id,
+			'title': self.title,
+			'description': self.description,
+			'albumArtUrl': self.albumArtUrl,
+			'artist' : self.artist.name
+		}
+
 class Song(Base):
 	__tablename__ = 'song'
 	id = Column(Integer, primary_key=True)
@@ -58,6 +68,14 @@ class Song(Base):
 	album = relationship(Album)
 	user = relationship(User)
 
+	@property
+	def serialize(self):
+		return {
+			'id': self.id,
+			'title': self.title,
+			'album': self.album.title,
+			'artist': self.artist.name
+		}
 
 class Admin(Base):
 	__tablename__ = 'admin'
