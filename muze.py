@@ -1,7 +1,16 @@
-from flask import Flask, url_for, redirect, render_template, request, flash, jsonify
+from flask import Flask, url_for, redirect, render_template, request, flash, jsonify, make_response
+from flask import session as login_session
 from sqlalchemy import Column, ForeignKey, Integer, String, create_engine, update
 from sqlalchemy.orm import sessionmaker, relationship
 from database_setup import Base, Admin, User, Artist, Album, Song
+import random, string
+
+from oauth2client import client, crypt
+from oauth2client.client import flow_from_clientsecrets
+from oauth2client.client import FlowExchangeError
+import httplib2
+import json
+import requests
 
 engine = create_engine('sqlite:///echochamber.db')
 Base.metadata.bind = engine
@@ -9,16 +18,127 @@ Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
+CLIENT_ID = json.loads(open('gclient_secrets.json', 'r').read())['web']['client_id']
 
 app = Flask(__name__)
 
-
-
 #login page
-@app.route('/login/')
+@app.route('/login')
 def login():
+	state=''.join(random.choice(string.ascii_uppercase + string.digits)
+	for x in xrange(32))
+	login_session['state'] = state
+	return render_template('login.html', STATE=state)
 
-	return render_template('login.html')
+@app.route('/gconnect', methods=['POST'])
+def gconnect():
+	id_token = request.data
+	print 'in connect'
+	print id_token
+	output = "something happened!"
+
+	# Check that the access token is valid.
+	url = ('https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=%s'
+	       % id_token)
+	h = httplib2.Http()
+	result = json.loads(h.request(url, 'GET')[1])
+	print result
+	# If there was an error in the access token info, abort.
+	if result.get('error') is not None:
+		print "we have a problem!"
+		response = make_response(json.dumps(result.get('error')), 500)
+		response.headers['Content-Type'] = 'application/json'
+
+
+	login_session['provider'] = 'google'
+	login_session['username'] = result['name']
+	#ogin_session['picture'] = result['picture']
+	login_session['email'] = result['email']
+
+
+	print login_session['username']
+	print login_session['email']
+
+	users = session.query(User).all()
+	if getUserId(login_session['email']) == None:
+		user_id = createUser(login_session)
+		print getUserId(login_session['email'])
+		# createUser(login_session)
+		login_session['user_id'] = user_id
+	else:
+		print 'email in users'
+		login_session['user_id'] = getUserId(login_session['email'])
+
+	output = ""
+	output += '<h1>Welcome, '
+	output += login_session['username']
+	output += '!</h1>'
+	output += '<img src = "'
+	#output += login_session['picture']
+	output += '" style="width: 300px; height: 300px; border-radius: 150px; -webkit-border-radius: 150px;-moz-border-radius: 150px">'
+
+	flash("you are now logged in as %s" % login_session['username'])
+	print login_session['username']
+
+	return output
+
+@app.route('/disconnect')
+def disconnect():
+	#print login_session['provider']
+	if 'provider' in login_session:
+		print login_session['provider']
+		print 'provider' in login_session
+		if login_session['provider'] == 'google':
+			print 'in disconnect for google'
+			gdisconnect()
+		if 'provider' in login_session == 'facebook':
+			print 'in disconnect for facebook'
+			fbdisconnect()
+			del login_session['facebook_id']
+
+		flash('you have sucessfully been logged out')
+		return redirect(url_for('showArtists'))
+	else:
+		#del login_session['access_token']
+
+		flash("you weren't logged in to start")
+		return redirect(url_for('showArtists'))
+
+# DISCONNECT- revoke a current user's token and reset their login_sesion
+@app.route('/gdisconnect')
+def gdisconnect():
+	# only disconnect a connected user
+	print "in gdisconnect"
+	access_token = login_session.get('access_token')
+	print login_session.get('access_token')
+	if access_token is None:
+		response.make_response(json.dumps('Current user is not connected.'), 401)
+		respons.headers['content-Type'] = 'application/json'
+		return response
+	url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % access_token
+	h = httplib2.Http()
+	result = h.request(url, 'GET')[0]
+
+	if result['status'] == '200':
+		print "resetting user session."
+		# Reset the user's session
+		del login_session['provider']
+		del login_session['access_token']
+		del login_session['gplus_id']
+		del login_session['username']
+		del login_session['email']
+		del login_session['picture']
+		del login_session['user_id']
+
+		response = make_response(json.dumps('Successfully disconnected.'), 200)
+		response.headers['Content-Type'] = 'application/json'
+		return response
+	else:
+		print result['status']
+		#for whatever reason the given token was invalid
+		response = make_response(json.dumps('Failed to revoke token for given user.'), 400)
+		response.headers['Content-Type'] = 'application/json'
+		return response
 
 #show list of artists
 @app.route('/artists/')
@@ -98,6 +218,7 @@ def showAlbums(artist_id):
 			print a.description
 		return render_template('albumList.html', albums=albums, artist=artist)
 	return render_template('publicAlbumList.html')
+
 #add new album
 @app.route('/artists/<int:artist_id>/albums/new/', methods=['GET', 'POST'])
 def newAlbum(artist_id):
@@ -181,7 +302,6 @@ def newSong(artist_id, album_id):
 		return render_template('newSong.html', artist= artist, album=album)
 	return render_template('unauthorized.html')
 
-
 #edit song
 @app.route('/artists/<int:artist_id>/albums/<int:album_id>/songs/<int:song_id>/edit/', methods=['GET', 'POST'])
 def editSong(artist_id, album_id, song_id):
@@ -223,6 +343,7 @@ def returnArtists():
 	artists = session.query(Artist).all()
 	return jsonify(Artists=[a.serialize for a in artists])
 
+#endpoint to return artist
 @app.route('/artists/<int:artist_id>/JSON/')
 def returnArtist(artist_id):
 	artist = session.query(Artist).filter_by(id=artist_id).one()
@@ -234,20 +355,42 @@ def returnAlbums():
 	albums = session.query(Album).all()
 	return jsonify(Albums=[a.serialize for a in albums])
 
+#endpoint to return album
 @app.route('/albums/<int:album_id>/JSON/')
 def returnAlbum(album_id):
 	album = session.query(Album).filter_by(id=album_id).one()
 	return jsonify(album.serialize)
 
+#endpoint to return songs
 @app.route('/songs/JSON/')
 def returnSongs():
 	songs = session.query(Song).all()
 	return jsonify(Songs=[s.serialize for s in songs])
 
+#endpoint to return song
 @app.route('/songs/<int:song_id>/JSON/')
 def returnSong(song_id):
 	song = session.query(Song).filter_by(id=song_id).one()
 	return jsonify(song.serialize)
+
+#user helper functions
+def createUser(login_session):
+	newUser = User(name = login_session['username'], email = login_session['email'], picUrl = login_session['picture'])
+	session.add(newUser)
+	session.commit()
+	user = session.query(User).filter_by(email = login_session['email']).one()
+	return user.id
+
+def getUserInfo(user_id):
+	user = session.query(User).filter_by(id=user_id).one()
+	return user
+
+def getUserId(email):
+	try:
+		user = session.query(User).filter_by(email=email).one()
+		return user.id
+	except:
+		return None
 
 if __name__ == '__main__':
 	app.secret_key ='some_secret'

@@ -1,12 +1,130 @@
-{% extends 'layout.html' %}
-{% block content %}
-<div class="row">
-	<div class="col-md-3">
-		<h4>Login with Facebook</h4>
-	</div>
-	<div class="col-md-3">
-		<h4>Login with Google</h4>
-	</div>
-</div>
+<!DOCTYPE html>
+<html>
+<head>
+	<!--load pre-requisits for google sign in -->
+	<script src='//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js'></script>
+	<!--script src='https://apis.google.com/js/client:platform.js?onload=start' async defer></script-->
+	<script src="https://apis.google.com/js/platform.js" async defer></script>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+	<meta name="google-signin-client_id" content="560569518839-nl2dmnu9djm99eindpcjilhlkrja25b1.apps.googleusercontent.com">
+	<link rel="stylesheet" href="{{url_for('static', filename='normalize.css')}}">
+	<link rel="stylesheet" href="{{url_for('static', filename='styles.css')}}">
+	<!--end prerequisits-->
+	<!--script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js">
+	</script>
+	<script src="https://apis.google.com/js/client:platform.js?onload=start" async defer>
+	</script>
+	<script>
+	    function start() {
+	      gapi.load('auth2', function() {
+	        auth2 = gapi.auth2.init({
+	          client_id: '560569518839-nl2dmnu9djm99eindpcjilhlkrja25b1.apps.googleusercontent.com'
+	          // Scopes to request in addition to 'profile' and 'email'
+	          //scope: 'additional_scope'
+	        });
+	      });
+	    }
+	 </script-->
+</head>
+<body>
+	<div class="g-signin2" data-onsuccess="onSignIn"></div>
 
-{% endblock %}
+	<script>
+		function onSignIn(googleUser) {
+			var profile = googleUser.getBasicProfile();
+			var id_token = googleUser.getAuthResponse().id_token;
+			console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
+			console.log('Name: ' + profile.getName());
+			console.log('Image URL: ' + profile.getImageUrl());
+			console.log('Email: ' + profile.getEmail());
+			console.log('Token Id: ' + id_token)
+			 $.ajax({
+			    type : "POST",
+			    url : "{{ url_for('gconnect') }}",
+			    data: id_token,
+			    contentType: 'application/json;charset=UTF-8',
+			    success: function(result) {
+				// Handle or verify the server response.
+				if (result) {
+					$('#result').html('login Successfull!</br>' + result + '</br>Redirecting...')
+					setTimeout(function() {
+					window.location.href = "/artists/";
+					}, 4000);
+
+				} else if (authResult['error']) {
+					console.log('There was an error: ' + authResult['error']);
+
+				} else {
+					$('#result').html('Failed to make a server-side call. Check your configuration and console.');
+				}
+			});
+		}
+	</script>
+	<a href="#" onclick="signOut();">Sign out</a>
+	<script>
+	  function signOut() {
+	    var auth2 = gapi.auth2.getAuthInstance();
+	    auth2.signOut().then(function () {
+	      console.log('User signed out.');
+	    });
+	  }
+	</script>
+	<!--script src="https://apis.google.com/js/platform.js" async defer></script>
+	<meta name="google-signin-client_id" content=
+	<div class="row">
+		<div class="col-md-3">
+			<h4>Login with Facebook</h4>
+		</div>
+		<div class="col-md-3">
+			<button id="signinButton">Sign in with Google</button>
+		<script>
+		  $('#signinButton').click(function() {
+		    // signInCallback defined in step 6.
+		    auth2.grantOfflineAccess({'redirect_uri': 'postmessage'}).then(signInCallback);
+		  });
+		</script>
+		<div id="result"></div>
+			<h4>Login with Google</h4>
+		</div>
+	</div>
+
+	<script>
+	function signInCallback(authResult) {
+		if (authResult['code']) {
+
+			// Hide the sign-in button now that the user is authorized, for example:
+			$('#signinButton').attr('style', 'display: none');
+
+			// Send the code to the server
+			$.ajax({
+				type: 'POST',
+				url: '/gconnect?state={{STATE}}',
+				processData: false,
+				data: authResult['code'],
+				contentType: 'application/octet-stream; charset=utf-8',
+				success: function(result) {
+				// Handle or verify the server response.
+				if (result) {
+					$('#result').html('login Successfull!</br>' + result + '</br>Redirecting...')
+					setTimeout(function() {
+					window.location.href = "/artists/";
+					}, 4000);
+
+				} else if (authResult['error']) {
+					console.log('There was an error: ' + authResult['error']);
+
+				} else {
+					$('#result').html('Failed to make a server-side call. Check your configuration and console.');
+				}
+
+			}
+
+			});
+		} else {
+		// There was an error.
+		}
+	}
+	</script-->
+</body>
+</html>
