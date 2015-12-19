@@ -10,7 +10,7 @@ EchoChamber INTRODUCTION:
 
 This is a catalog of music that everyone should hear. The intent is that a user will invite friends with similar tastes or 'good' taste in music to add music that they feel everyone should hear.
 
-EchoChamber has been created using Flask, SqlAlchemy, sqlite, Vagrant, and JQuery.
+EchoChamber has been created using Python, Flask, SqlAlchemy, sqlite, Vagrant, and JQuery.
 It employs Google and Facebook for login authentication and authorization.
 
 A user can view music without being logged in, however, will not be able to participate in adding, editing or deleting music.
@@ -20,3 +20,10 @@ A user that is logged in will have a unique user id. They will be authorized to 
 ==============================================================
 INSTRUCTIONS:
 ==============================================================
+Download or clone repository from github at: https://github.com/rumblefish2494/CATALOG
+you will need an server environment with sqlite, sqlAlchemy, Flask, Python. The site is
+broadcast to port 5000 of the local host. If you do not have a native environment to serve the EchoChamber site. You can load the VirtualBox machine with Vagrant and set up according to the instructions here:https://www.udacity.com/wiki/ud088/vagrant. This is the same environment that the site was created in. Once you have the requisite environment. You can launch the site by running the command to the python interpreter in the terminal:
+python muze.py
+Once Python confirms that the server is running on http://0.0.0.0:5000 open your browser and enter the address http://localhost:5000/artists/.
+You should be looking at the home page of EchoChamber with a list of artists.
+the LOGIN button is in the top right corner of the page.
