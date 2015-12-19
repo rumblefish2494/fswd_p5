@@ -46,16 +46,22 @@
 	margin: 0;
 }
 
-.title-bar-links a {
+#logInOut {
+	border: 3px solid #66ff33;
+	border-radius: 10px;
+}
+
+#logInOut a {
 	color: #99ff66;
+	margin-left: 25%
 }
 
 
-.title-bar-links a:visited {
+#logInOut a:visited {
 	color: #99ff663;
 }
 
-.title-bar-links a:hover {
+#logInOut a:hover {
 	color: #ffff00;
 }
 .title-text {

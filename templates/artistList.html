@@ -1,17 +1,11 @@
 {% extends 'layout.html' %}
 {% block login %}
-		<a href="#" onclick="signOut();">Sign out</a>
-		<script>
-		  function signOut() {
-		    var auth2 = gapi.auth2.getAuthInstance();
-		    auth2.signOut().then(function () {
-		      console.log('User signed out.');
-		    });
-		  }
-		</script>
+	<div class="col-md-2" id="logInOut">
+		<a href="{{url_for('disconnect')}}">LOGOUT</a>
+	</div>
 {% endblock %}
-
 {% block content %}
+
 <div class="row">
 		<div class="col-md-3 muze-bar">
 			<h3>EchoChamber</h3>

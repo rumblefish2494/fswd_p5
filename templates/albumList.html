@@ -1,4 +1,9 @@
 {% extends 'layout.html' %}
+{% block login %}
+	<div class="col-md-2" id="logInOut">
+		<a href="{{url_for('disconnect')}}">LOGOUT</a>
+	</div>
+{% endblock %}
 {% block content %}
 	<div class="row">
 		<div class="col-md-3 muze-bar">

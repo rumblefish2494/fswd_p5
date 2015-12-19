@@ -1,36 +1,42 @@
 {% extends 'layout.html' %}
+{% block login %}
+	<div class="col-md-2" id="logInOut">
+		<a href="{{url_for('login')}}">LOGIN</a>
+	</div>
+{% endblock %}
 {% block content %}
 	<div class="row">
-		<div class="col-md-2 muze-bar">
-			<h3>Muze</h3>
+		<div class="col-md-3 muze-bar">
+			<h3>EchoChamber</h3>
 		</div>
 		<div class="col-md-3 artist-bar">
-			<h3>Artist</h3>
+			<h3>{{artist.name}}</h3>
 		</div>
 		<div class="col-md-4 album-bar">
-			<h3>Album</h3>
+			<h3>{{album.title}}</h3>
 		</div>
 	</div>
 		<div class="row title-links">
 		<hr>
 		<div class="col-md-2">
-			<a href="#">Login</a>
+			<a href="{{url_for('showAlbums', artist_id=artist.id)}}">Return to Album List</a>
 		</div>
 	</div>
 	<div class="row">
 		<hr>
 		<div class="col-md-6 artist-info">
 			<div class="col-md-6 album-art">
-				<img src="http://placehold.it/350x350">
+				<img src={{album.albumArtUrl}} height='300' width='300'>
 			</div>
 			<div class="col-md-7 album-description">
-				<p>Info about album and stuff<p>
+				<p>{{album.description}}<p>
 			</div>
 		</div>
 		<div class="col-md-6 song-list">
 			<ul>
-				<li>Song 1</li>
-				<li>Song 2</li>
+				{% for song in songs %}
+					<li>{{song.title}}</li>
+				{% endfor %}
 			</ul>
 		</div>
 	</div>

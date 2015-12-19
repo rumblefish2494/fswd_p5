@@ -1,21 +1,25 @@
 {% extends 'layout.html' %}
+{% block login %}
+	<div class="col-md-2" id="logInOut">
+		<a href="{{url_for('login')}}">LOGIN</a>
+	</div>
+{% endblock %}
 {% block content %}
 <div class="row">
-		<div class="col-md-2 muze-bar">
-			<h3>Muze</h3>
+		<div class="col-md-3 muze-bar">
+			<h3>EchoChamber</h3>
 		</div>
 	</div>
 	<div class="row title-links">
 		<hr>
-		<div class="col-md-2">
-			<a href="#">Login</a>
-		</div>
 	</div>
+
 	<div class="row">
-		<hr>
 		<div class="artist-list col-md-6">
 			<ul>
-				<li><a href="#">Artist 1</a></li>
+				{% for artist in artists %}
+					<li><a href="{{url_for('showAlbums', artist_id=artist.id)}}">{{artist.name}}</a></li>
+				{% endfor %}
 			</ul>
 		</div>
 	</div>

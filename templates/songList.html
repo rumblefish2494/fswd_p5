@@ -1,4 +1,9 @@
 {% extends 'layout.html' %}
+{% block login %}
+	<div class="col-md-2" id="logInOut">
+		<a href="{{url_for('disconnect')}}">LOGOUT</a>
+	</div>
+{% endblock %}
 {% block content %}
 	<div class="row">
 		<div class="col-md-3 muze-bar">
@@ -41,7 +46,7 @@
 				{% for song in songs %}
 					<li>{{song.title}}</li>
 						<a href="{{url_for('editSong', artist_id=artist.id, album_id=album.id, song_id=song.id)}}">edit</a>
-						<a href="#">delete</a>
+						<a href="{{url_for('deleteSong', artist_id=artist.id, album_id=album.id, song_id=song.id)}}">delete</a>
 				{% endfor %}
 			</ul>
 		</div>

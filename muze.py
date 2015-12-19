@@ -264,11 +264,12 @@ def fbdisconnect():
 #show list of artists
 @app.route('/artists/')
 def showArtists():
-	login = True
-	if login:
-		artists = session.query(Artist).all()
+	artists = session.query(Artist).all()
+	#test if user is logged in
+	if 'user_id' in login_session:
 		return render_template('artistList.html', artists=artists)
-	return render_template('publicArtistList.html')
+	return render_template('publicArtistList.html', artists=artists)
+
 #add new artist
 @app.route('/artists/new/', methods=['GET', 'POST'])
 def newArtist():
@@ -328,17 +329,16 @@ def deleteArtist(artist_id):
 #show list of albums for artist
 @app.route('/artists/<int:artist_id>/albums/')
 def showAlbums(artist_id):
-	login = True
-	if login:
-		artist = session.query(Artist).filter_by(id=artist_id).one()
-		albums = session.query(Album).filter_by(artist_id=artist_id).all()
+	artist = session.query(Artist).filter_by(id=artist_id).one()
+	albums = session.query(Album).filter_by(artist_id=artist_id).all()
+	if 'user_id' in login_session:
 		print artist_id
 		for a in albums:
 			print a.artist_id
 			print a.title
 			print a.description
 		return render_template('albumList.html', albums=albums, artist=artist)
-	return render_template('publicAlbumList.html')
+	return render_template('publicAlbumList.html', albums=albums, artist=artist)
 
 #add new album
 @app.route('/artists/<int:artist_id>/albums/new/', methods=['GET', 'POST'])
@@ -399,13 +399,12 @@ def deleteAlbum(artist_id, album_id):
 #show list of songs for artist/album
 @app.route('/artists/<int:artist_id>/albums/<int:album_id>/songs/')
 def showSongs(artist_id, album_id):
-	login = True
-	if login:
-		artist = session.query(Artist).filter_by(id=artist_id).one()
-		album = session.query(Album).filter_by(id=album_id).one()
-		songs = session.query(Song).filter_by(album_id=album_id).all()
+	artist = session.query(Artist).filter_by(id=artist_id).one()
+	album = session.query(Album).filter_by(id=album_id).one()
+	songs = session.query(Song).filter_by(album_id=album_id).all()
+	if 'user_id' in login_session:
 		return render_template('songList.html', artist=artist, album=album, songs=songs)
-	return render_template('publicSongList.html')
+	return render_template('publicSongList.html', artist=artist, album=album, songs=songs)
 
 #add new song
 @app.route('/artists/<int:artist_id>/albums/<int:album_id>/songs/new/', methods=['GET', 'POST'])
