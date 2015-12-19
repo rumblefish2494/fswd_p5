@@ -32,32 +32,85 @@ def login():
 
 @app.route('/gconnect', methods=['POST'])
 def gconnect():
-	id_token = request.data
 	print 'in connect'
-	print id_token
-	output = "something happened!"
+	if request.args.get('state') != login_session['state']:
+		print "apparent cross site forgery request"
+		print 'in if state = state'
+		print request.args.get('state')
+		print login_session['state']
+		response = make_response(json.dumps('Invalid state parameter'), 401)
+		response.headers['Content-type'] = 'application/json'
+		return response
 
-	# Check that the access token is valid.
-	url = ('https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=%s'
-	       % id_token)
+	code = request.data
+
+	try:
+		flow = client.flow_from_clientsecrets(
+			'gclient_secrets.json',
+			scope='',
+			redirect_uri='postmessage')
+		credentials = flow.step2_exchange(code)
+	except FlowExchangeError:
+		response = make_response(json.dumps('failed to upgrade the auth code.'), 401)
+		response.headers['Content-Type'] = 'application/json'
+		return response
+	#auth_code = request.data
+	#credentials = flow.step2_exchange(auth_code)
+
+	#output = "something happened!"
+	access_token =  credentials.access_token
+	print access_token
+
+	#check that access token is valid
+	url = ('https://www.googleapis.com/oauth2/v3/tokeninfo?access_token=%s' % access_token)
 	h = httplib2.Http()
 	result = json.loads(h.request(url, 'GET')[1])
 	print result
-	# If there was an error in the access token info, abort.
+	# if there was an error in the access token info, abort.
 	if result.get('error') is not None:
-		print "we have a problem!"
-		response = make_response(json.dumps(result.get('error')), 500)
-		response.headers['Content-Type'] = 'application/json'
+		print 'in result.get "error" -- check access token valid'
+	 	response = make_response(json.dumps(result.get('error')), 500)
+	 	response.headers['Content-Type'] = 'application/json'
+	 	return response
+
+	# verify that the access token is used for the intended user.
+	#assign credentials id to variable google_id
+	google_id = credentials.id_token['sub']
+	if result['sub'] != google_id:
+	 	response = make_response(
+	 		json.dumps("Token's user ID doesn't match given user ID."), 401)
+	 	response.headers['Content-Type'] = 'application/json'
+	 	return response
+
+	# verify that the access token is valid for this app.
+	if  result['azp'] != CLIENT_ID:
+	 	response = make_response(
+	 		json.dumps("Token's client ID does not matoch app's"), 401)
+	 	response.headers['Content-Type'] = 'application/json'
+	 	return response
+
+	 #Check to see if user is already logged in
+	stored_credentials = login_session.get('credentials')
+	stored_google_id = login_session.get('google_id')
+	if stored_credentials is not None and google_id == stored_google_id:
+	 	response = make_response(json.dumps('Current user is already connected'), 200)
+	 	response.headers['Content-Type'] = 'application/json'
+	 	return response
 
 
+	#Get user info
+	userinfo_url = "https://www.googleapis.com/oauth2/v1/userinfo"
+	params = {'access_token': credentials.access_token, 'alt': 'json'}
+	answer = requests.get(userinfo_url, params=params)
+
+	#populate user info in session
+	data = answer.json()
 	login_session['provider'] = 'google'
-	login_session['username'] = result['name']
-	#ogin_session['picture'] = result['picture']
-	login_session['email'] = result['email']
-
-
-	print login_session['username']
-	print login_session['email']
+	login_session['google_id'] = google_id
+	login_session['access_token'] = credentials.access_token
+	login_session['username'] = data['name']
+	login_session['picture'] = data['picture']
+	login_session['email'] = data['email']
 
 	users = session.query(User).all()
 	if getUserId(login_session['email']) == None:
@@ -66,35 +119,42 @@ def gconnect():
 		# createUser(login_session)
 		login_session['user_id'] = user_id
 	else:
-		print 'email in users'
+		print 'email of logged in client exists in users table'
 		login_session['user_id'] = getUserId(login_session['email'])
+
+	print login_session['user_id']
 
 	output = ""
 	output += '<h1>Welcome, '
 	output += login_session['username']
 	output += '!</h1>'
 	output += '<img src = "'
-	#output += login_session['picture']
+	output += login_session['picture']
 	output += '" style="width: 300px; height: 300px; border-radius: 150px; -webkit-border-radius: 150px;-moz-border-radius: 150px">'
 
 	flash("you are now logged in as %s" % login_session['username'])
-	print login_session['username']
+	#print login_session['username']
 
 	return output
 
 @app.route('/disconnect')
 def disconnect():
-	#print login_session['provider']
+	print "in disconnect"
 	if 'provider' in login_session:
 		print login_session['provider']
-		print 'provider' in login_session
 		if login_session['provider'] == 'google':
 			print 'in disconnect for google'
 			gdisconnect()
-		if 'provider' in login_session == 'facebook':
-			print 'in disconnect for facebook'
-			fbdisconnect()
-			del login_session['facebook_id']
+			del login_session['google_id']
+		#if 'provider' in login_session == 'facebook':
+			#print 'in disconnect for facebook'
+			#fbdisconnect()
+			#del login_session['facebook_id']
+		print "back in disconnect"
+		del login_session['provider']
+		del login_session['email']
+		del login_session['user_id']
+		del login_session['picture']
 
 		flash('you have sucessfully been logged out')
 		return redirect(url_for('showArtists'))
@@ -122,13 +182,7 @@ def gdisconnect():
 	if result['status'] == '200':
 		print "resetting user session."
 		# Reset the user's session
-		del login_session['provider']
 		del login_session['access_token']
-		del login_session['gplus_id']
-		del login_session['username']
-		del login_session['email']
-		del login_session['picture']
-		del login_session['user_id']
 
 		response = make_response(json.dumps('Successfully disconnected.'), 200)
 		response.headers['Content-Type'] = 'application/json'
