@@ -17,6 +17,15 @@ class User(Base):
 	email = Column(String)
 	picUrl = Column(String)
 
+	@property
+	def serialize(self):
+		return {
+			'name': self.name,
+			'id': self.id,
+			'email': self.email,
+			'picUrl': self.picUrl
+		}
+
 class Artist(Base):
 	__tablename__ = 'artist'
 	name = Column(String, nullable=False)
