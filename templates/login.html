@@ -17,37 +17,30 @@
 			gapi.load('auth2', function() {
 				auth2 = gapi.auth2.init({
 					client_id: '560569518839-nl2dmnu9djm99eindpcjilhlkrja25b1.apps.googleusercontent.com',
-
-					// Scopes to request in addition to 'profile' and 'email'
-					//scope: 'additional_scope'
 				});
 			});
 		}
 	</script>
 </head>
 <body>
-	<!-- Add where you want your sign-in button to render -->
-	<!-- Use an image that follows the branding guidelines in a real app -->
 	<div class='row'>
-		<div class='col-md-2'>
+		<div class='col-md-2'><!--google sign in button-->
 			<button id="signinButton">Sign in with Google</button>
 		</div>
-		<div class="col-md-2">
+		<div class="col-md-2"><!--facebook sign in button-->
 			<fb:login-button scope="public_profile,email" onlogin="sendTokenToServer();">
 				<a href='javascript:sendTokenToServer()'>Login with Facebook</a>
 			</fb:login-button>
 		</div>
 	</div>
-	<script>
+	<script>//when google button clicked call signInCallBack
 		$('#signinButton').click(function() {
-		// signInCallback defined in step 6.
 		auth2.grantOfflineAccess({'redirect_uri': 'postmessage'}).then(signInCallback);
 		});
 	</script>
 	<div id="result"></div>
 
-	<!-- Last part of BODY element in file index.html -->
-	<script>
+	<script>//process user with google auth server
 	function signInCallback(authResult) {
 	  if (authResult['code']) {
 
@@ -85,7 +78,7 @@
 	</script>
 
 	<!--facebook login-->
-	<script>
+	<script>//proccess user with facebook auth server
 		window.fbAsyncInit = function() {
 			FB.init({
 				appId      : '189863644693243',
@@ -102,8 +95,6 @@
 			fjs.parentNode.insertBefore(js, fjs);
 		}(document, 'script', 'facebook-jssdk'));
 
-		// Here we run a very simple test of the Graph API after login is
-		// successful.  See statusChangeCallback() for when this call is made.
 		function sendTokenToServer() {
 		$('#signinButton').attr('style', 'display: none');
 	    $('.fb-login-button').attr('style', 'display: none');

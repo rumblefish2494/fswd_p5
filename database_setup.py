@@ -10,13 +10,14 @@ from sqlalchemy import create_engine
 
 Base = declarative_base()
 
+#create users table
 class User(Base):
 	__tablename__ = 'user'
 	name = Column(String, nullable=False)
 	id = Column(Integer, primary_key=True)
 	email = Column(String)
 	picUrl = Column(String)
-
+	#for returning JSON
 	@property
 	def serialize(self):
 		return {
@@ -26,6 +27,7 @@ class User(Base):
 			'picUrl': self.picUrl
 		}
 
+#create artists table
 class Artist(Base):
 	__tablename__ = 'artist'
 	name = Column(String, nullable=False)
@@ -34,7 +36,7 @@ class Artist(Base):
 	picUrl = Column(String)
 	user_id = Column(Integer, ForeignKey("user.id"))
 	user = relationship(User)
-
+	#for returning JSON
 	@property
 	def serialize(self):
 		return {
@@ -44,7 +46,7 @@ class Artist(Base):
 			'picUrl': self.picUrl
 		}
 
-
+#create Album table
 class Album(Base):
 	__tablename__ = 'album'
 	title = Column(String, nullable=False)
@@ -55,7 +57,7 @@ class Album(Base):
 	artist = relationship(Artist)
 	user_id = Column(Integer, ForeignKey("user.id"))
 	user = relationship(User)
-
+	#for returning JSON
 	@property
 	def serialize(self):
 		return {
@@ -65,7 +67,7 @@ class Album(Base):
 			'albumArtUrl': self.albumArtUrl,
 			'artist' : self.artist.name
 		}
-
+#create Song table
 class Song(Base):
 	__tablename__ = 'song'
 	id = Column(Integer, primary_key=True)
@@ -76,7 +78,7 @@ class Song(Base):
 	artist = relationship(Artist)
 	album = relationship(Album)
 	user = relationship(User)
-
+	#for returning JSON
 	@property
 	def serialize(self):
 		return {
@@ -85,7 +87,7 @@ class Song(Base):
 			'album': self.album.title,
 			'artist': self.artist.name
 		}
-
+#create Admin table (for future use)
 class Admin(Base):
 	__tablename__ = 'admin'
 	id = Column(Integer, primary_key=True)

@@ -22,7 +22,7 @@ CLIENT_ID = json.loads(open('gclient_secrets.json', 'r').read())['web']['client_
 
 app = Flask(__name__)
 
-#login page
+#route user to login page and pass unique code to prevent forgery
 @app.route('/login')
 def login():
 	state=''.join(random.choice(string.ascii_uppercase + string.digits)
@@ -30,6 +30,7 @@ def login():
 	login_session['state'] = state
 	return render_template('login.html', STATE=state)
 
+#google connect proccess for authenticating user
 @app.route('/gconnect', methods=['POST'])
 def gconnect():
 	if request.args.get('state') != login_session['state']:
@@ -82,7 +83,7 @@ def gconnect():
 	 	response.headers['Content-Type'] = 'application/json'
 	 	return response
 
-	 #Check to see if user is already logged in
+	#Check to see if user is already logged in
 	stored_credentials = login_session.get('credentials')
 	stored_google_id = login_session.get('google_id')
 	if stored_credentials is not None and google_id == stored_google_id:
@@ -113,7 +114,7 @@ def gconnect():
 	else:
 		print 'email of logged in client exists in users table'
 		login_session['user_id'] = getUserId(login_session['email'])
-
+	#build output
 	output = ""
 	output += '<h1>Welcome, '
 	output += login_session['username']
@@ -127,6 +128,7 @@ def gconnect():
 
 	return output
 
+#facebook connect proccess for authenticating user
 @app.route('/fbconnect', methods=['POST'])
 def fbconnect():
 	print "in fbconnect"
@@ -197,6 +199,7 @@ def fbconnect():
 	print "done!"
 	return output
 
+#primary disconnect routes to appropriate service for disconnect
 @app.route('/disconnect')
 def disconnect():
 	if 'provider' in login_session:
