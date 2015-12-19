@@ -1,4 +1,16 @@
 {% extends 'layout.html' %}
+{% block login %}
+		<a href="#" onclick="signOut();">Sign out</a>
+		<script>
+		  function signOut() {
+		    var auth2 = gapi.auth2.getAuthInstance();
+		    auth2.signOut().then(function () {
+		      console.log('User signed out.');
+		    });
+		  }
+		</script>
+{% endblock %}
+
 {% block content %}
 <div class="row">
 		<div class="col-md-3 muze-bar">
@@ -11,8 +23,8 @@
 			<a href="{{url_for('newArtist')}}">Add Artist</a>
 		</div>
 	</div>
+
 	<div class="row">
-		<hr>
 		<div class="artist-list col-md-6">
 			<ul>
 				{% for artist in artists %}

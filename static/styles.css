@@ -46,10 +46,18 @@
 	margin: 0;
 }
 
-.title-bar-links {
-
+.title-bar-links a {
+	color: #99ff66;
 }
 
+
+.title-bar-links a:visited {
+	color: #99ff663;
+}
+
+.title-bar-links a:hover {
+	color: #ffff00;
+}
 .title-text {
 	background-color: #006600;
 	font-weight: bold;
