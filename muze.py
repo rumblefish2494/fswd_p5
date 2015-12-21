@@ -265,6 +265,7 @@ def fbdisconnect():
 
 
 #show list of artists
+@app.route('/')
 @app.route('/artists/')
 def showArtists():
 	artists = session.query(Artist).all()
