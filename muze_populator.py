@@ -1,8 +1,7 @@
 from sqlalchemy import Column, ForeignKey, Integer, String, create_engine, update
 from sqlalchemy.orm import sessionmaker, relationship
 from database_setup import Base, Admin, User, Artist, Album, Song
-
-engine = create_engine('sqlite:///echochamber.db')
+'postgresql:///catalog')
 Base.metadata.bind = engine
 
 DBSession = sessionmaker(bind=engine)

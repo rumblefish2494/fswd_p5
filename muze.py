@@ -13,13 +13,13 @@ import json
 import requests
 
 #engine = create_engine('sqlite:///echochamber.db')
-engine = create_engine('postgresql:///echochamber')
+engine = create_engine('postgresql:///catalog')
 Base.metadata.bind = engine
 
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
-
-CLIENT_ID = json.loads(open('gclient_secrets.json', 'r').read())['web']['client_id']
+PATH_CID = "/var/www/catalog/"
+CLIENT_ID = json.loads(open(PATH_CID + 'gclient_secrets.json', 'r').read())['web']['client_id']
 
 app = Flask(__name__)
 
@@ -142,8 +142,8 @@ def fbconnect():
 
 	#exchange client token for long-lived server-side token with GET /oauth/
 	#access_token?grant_type=fb_exchange_token&client_id={app-id}&client_secret={app-secret]&fb_exchange_token={short-lived-token}
-	app_id = json.loads(open('fb_client_secrets.json', 'r').read())['web']['app_id']
-	app_secret = json.loads(open('fb_client_secrets.json', 'r').read())['web']['app_secret']
+	app_id = json.loads(open(PATH_CID + 'fb_client_secrets.json', 'r').read())['web']['app_id']
+	app_secret = json.loads(open(PATH_CID + 'fb_client_secrets.json', 'r').read())['web']['app_secret']
 	url = 'https://graph.facebook.com/oauth/access_token?grant_type=fb_exchange_token&client_id=%s&client_secret=%s&fb_exchange_token=%s' % (
         app_id, app_secret, access_token)
 

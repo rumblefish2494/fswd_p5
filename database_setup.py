@@ -96,6 +96,6 @@ class Admin(Base):
 	picUrl = Column(String)
 
 engine = create_engine(
-	'postgresql:///echochamber')
+	'postgresql:///catalog')
 
 Base.metadata.create_all(engine)
