@@ -12,7 +12,8 @@ import httplib2
 import json
 import requests
 
-engine = create_engine('sqlite:///echochamber.db')
+#engine = create_engine('sqlite:///echochamber.db')
+engine = create_engine('postgresql:///echochamber')
 Base.metadata.bind = engine
 
 DBSession = sessionmaker(bind=engine)
