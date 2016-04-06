@@ -96,6 +96,6 @@ class Admin(Base):
 	picUrl = Column(String)
 
 engine = create_engine(
-	'postgresql:///catalog')
+	'postgresql+psycopg2://catalog:Udacity@/catalog')
 
 Base.metadata.create_all(engine)
